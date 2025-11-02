@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Will You Be Mine? 💖</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Marker Felt', 'Segoe UI', cursive, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.4);
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 90%;
+            width: 600px;
+            position: relative;
+            z-index: 10;
+            border: 5px solid #ff6b9d;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: #ff1493;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493; }
+            to { text-shadow: 0 0 20px #ff1493, 0 0 30px #ff69b4; }
+        }
+
+        .heart {
+            color: #ff1493;
+            font-size: 2rem;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+            margin: 0 5px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        p {
+            font-size: 1.5rem;
+            color: #ff6b9d;
+            margin: 18px 0;
+            line-height: 1.5;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 36px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            min-width: 120px;
+        }
+
+        .yes-btn {
+            background: linear-gradient(to right, #ff9a9e, #fad0c4);
+            color: #ff1493;
+        }
+
+        .yes-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 25px rgba(255, 105, 180, 0.7);
+        }
+
+        /* The "No" button is now inside the container */
+        .no-btn {
+            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+            color: #4a69bd;
+            /* Will be repositioned via JS within safe bounds */
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 1.3rem;
+            color: #ff6b9d;
+            min-height: 24px;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .falling-heart {
+            position: absolute;
+            font-size: 20px;
+            color: #ff1493;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 1;
+            }
+        }
+
+        .success-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        .success-screen.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .success-message {
+            font-size: 3.5rem;
+            color: #ff1493;
+            text-align: center;
+            margin-bottom: 25px;
+            text-shadow: 0 0 20px rgba(255, 20, 147, 0.7);
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .hearts-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .heart-icon {
+            font-size: 3rem;
+            animation: pulse 2s infinite;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 1.1rem;
+            color: #ff6b9d;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            p { font-size: 1.3rem; }
+            .btn { font-size: 1.3rem; padding: 12px 30px; }
+            .success-message { font-size: 2.5rem; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 25px 20px; }
+            h1 { font-size: 1.9rem; }
+            p { font-size: 1.2rem; margin: 12px 0; }
+            .buttons { gap: 15px; }
+            .btn { font-size: 1.25rem; padding: 10px 25px; min-width: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="hearts-container"></div>
+
+    <div class="container">
+        <h1>Will You Be Mine? <i class="fas fa-heart heart"></i></h1>
+        <p>Dear YOU,</p>
+        <p>I've been thinking about you every day...<br>and I can't imagine my life without you!</p>
+        <p>Will you make me the happiest person alive?</p>
+
+        <div class="buttons">
+            <form id="yesForm" action="https://formspree.io/f/mblpqoeg" method="POST" style="display:inline;">
+                <input type="hidden" name="visitor_code" value="">
+                <input type="hidden" name="message" value="She said YES! 💖">
+                <button type="submit" class="btn yes-btn">Yes! 💖</button>
+            </form>
+
+<script>
+// Set the hidden field when page loads
+document.querySelector('input[name="visitor_code"]').value = getVisitorCode();
+</script>
+            <button class="btn no-btn" id="noBtn">No 😢</button>
+        </div>
+
+        <div class="message" id="message"></div>
+
+        <div class="footer">
+            <p>Click "Yes" and make my dreams come true! ✨</p>
+        </div>
+    </div>
+
+    <div class="success-screen" id="successScreen">
+        <div class="success-message">YAY! YOU SAID YES! 💖</div>
+        <div class="hearts-container">
+            <div class="heart-icon">❤️</div>
+            <div class="heart-icon">💕</div>
+            <div class="heart-icon">💖</div>
+            <div class="heart-icon">💗</div>
+            <div class="heart-icon">💘</div>
+        </div>
+        <p style="font-size: 1.6rem; color: white; margin-top: 25px;">I promise to make you smile every day!</p>
+    </div>
+
+    <script>
+        // Get the 'from' parameter from URL (e.g., ?from=crush123)
+        function getVisitorCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('from') || 'anonymous';
+        }
+    </script>
+
+    <script>
+        // Create falling hearts
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartEmojis = ['❤️', '💕', '💖', '💗', '💘', '💞', '💓'];
+            const totalHearts = window.innerWidth < 768 ? 20 : 40;
+
+            for (let i = 0; i < totalHearts; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'falling-heart';
+                    heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.animation = `fall ${Math.random() * 5 + 5}s linear forwards`;
+                    heart.style.fontSize = (Math.random() * 16 + 14) + 'px';
+                    container.appendChild(heart);
+
+                    // Remove after animation
+                    setTimeout(() => {
+                        if (heart.parentNode) heart.remove();
+                    }, 10000);
+                }, i * 300);
+            }
+        }
+
+        document.getElementById('yesForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Stop page refresh
+  
+          // Submit form silently
+        fetch(this.action, {
+         method: 'POST',
+        body: new FormData(this),
+        headers: { 'Accept': 'application/json' }
+        }).then(() => {
+        // Show your cute success screen
+        document.getElementById('successScreen').classList.add('show');
+        }).catch(() => {
+            alert('Oops! Could you try again?');
+            });
+        });
+
+        // Move "No" button within safe bounds
+        function moveNoButton() {
+            const noBtn = document.getElementById('noBtn');
+            const messageEl = document.getElementById('message');
+            const messages = [
+                "Oh come on! 😢",
+                "Are you sure? 💔",
+                "Don't break my heart! 💕",
+                "I'll keep asking until you say yes! 😊",
+                "You know you want to say yes! 😉",
+                "Please? Pretty please? 🥺",
+                "I'll give you all my hearts! 💖",
+                "Just one little 'Yes'? 😇",
+                "You're making me sad... 😿",
+                "I promise to be the best! 🤗"
+            ];
+
+            // Show message
+            messageEl.textContent = messages[Math.floor(Math.random() * messages.length)];
+            messageEl.style.opacity = 1;
+            setTimeout(() => messageEl.style.opacity = 0, 2000);
+
+            // Get container bounds
+            const containerRect = document.querySelector('.container').getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+
+            // Safe area: inside container with padding
+            const safeLeft = containerRect.left + 20;
+            const safeTop = containerRect.top + 20;
+            const safeRight = containerRect.right - btnRect.width - 20;
+            const safeBottom = containerRect.bottom - btnRect.height - 20;
+
+            // Generate new position within safe bounds
+            const newX = Math.floor(Math.random() * (safeRight - safeLeft)) + safeLeft;
+            const newY = Math.floor(Math.random() * (safeBottom - safeTop)) + safeTop;
+
+            // Apply new position (relative to viewport)
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = newX + 'px';
+            noBtn.style.top = newY + 'px';
+            noBtn.style.transform = 'none';
+        }
+
+        function showSuccess() {
+            document.getElementById('successScreen').classList.add('show');
+            // Optional: Add confetti or extra effects here
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createHearts();
+            setInterval(createHearts, 8000); // Keep hearts falling
+
+            document.getElementById('noBtn').addEventListener('click', moveNoButton);
+            document.getElementById('yesBtn').addEventListener('click', showSuccess);
+
+            // Reset "No" button to normal flow on window resize
+            window.addEventListener('resize', () => {
+                const noBtn = document.getElementById('noBtn');
+                noBtn.style.position = '';
+                noBtn.style.left = '';
+                noBtn.style.top = '';
+            });
+        });
+    </script>
+</body>
+</html>
