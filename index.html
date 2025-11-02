@@ -306,11 +306,16 @@
             }
         }
 
-        // Get secret code from URL
         function getVisitorCode() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('from') || 'anonymous';
-        }
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('from') || 'anonymous';
+    
+    // 🔍 DEBUG: Remove this after testing!
+    console.log("URL:", window.location.href);
+    console.log("Extracted code:", code);
+    
+    return code;
+}
 
         // Confetti effect
         function createConfetti() {
@@ -380,4 +385,5 @@
     </script>
 </body>
 </html>
+
 
