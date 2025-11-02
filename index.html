@@ -191,6 +191,13 @@
             color: #ff6b9d;
         }
 
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
         @media (max-width: 768px) {
             h1 { font-size: 2.2rem; }
             p { font-size: 1.3rem; }
@@ -305,6 +312,34 @@
             return params.get('from') || 'anonymous';
         }
 
+        // Confetti effect
+        function createConfetti() {
+            const colors = ['#ff6b9d', '#ff9a9e', '#fad0c4', '#a1c4fd', '#c2e9fb'];
+            const container = document.body;
+            
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                container.appendChild(confetti);
+                
+                const animation = confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                });
+                
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+
         // Initialize everything
         document.addEventListener('DOMContentLoaded', () => {
             createHearts();
@@ -313,40 +348,35 @@
             // Set up "No" button
             document.getElementById('noBtn').addEventListener('click', moveNoButton);
 
-            // Set up "Yes" button with Formspree
+            // Set up "Yes" button with silent Formspree submission
             document.getElementById('yesBtn').addEventListener('click', function(e) {
                 e.preventDefault();
 
-                // 👇👇👇 REPLACE THIS WITH YOUR FORMSPREE ID 👇👇👇
-                const FORMSPREE_URL = "https://formspree.io/f/mblpqoeg";
-                // 👆👆👆 REPLACE THIS WITH YOUR FORMSPREE ID 👆👆👆
+                // 🔑 REPLACE "YOUR_FORMSPREE_ID" BELOW WITH YOUR ACTUAL ID!
+                const FORMSPREE_URL = 'https://formspree.io/f/YOUR_FORMSPREE_ID';
 
-                // Create form dynamically
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = FORMSPREE_URL;
+                const formData = new FormData();
+                formData.append('who_clicked', getVisitorCode());
+                formData.append('message', 'She said YES! 💖');
 
-                // Add hidden fields
-                const codeField = document.createElement('input');
-                codeField.type = 'hidden';
-                codeField.name = 'who_clicked';
-                codeField.value = getVisitorCode();
-
-                const msgField = document.createElement('input');
-                msgField.type = 'hidden';
-                msgField.name = 'message';
-                msgField.value = 'She said YES! 💖';
-
-                form.appendChild(codeField);
-                form.appendChild(msgField);
-                document.body.appendChild(form);
-                form.submit();
-
-                // Show success screen
-                document.getElementById('successScreen').classList.add('show');
+                fetch(FORMSPREE_URL, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('successScreen').classList.add('show');
+                        createConfetti();
+                    } else {
+                        alert('Oops! Could you try again?');
+                    }
+                })
+                .catch(() => {
+                    alert('Network error. Please check your internet and try again!');
+                });
             });
         });
     </script>
 </body>
-
 </html>
