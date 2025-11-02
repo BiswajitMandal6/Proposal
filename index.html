@@ -107,11 +107,9 @@
             box-shadow: 0 0 25px rgba(255, 105, 180, 0.7);
         }
 
-        /* The "No" button is now inside the container */
         .no-btn {
             background: linear-gradient(to right, #a1c4fd, #c2e9fb);
             color: #4a69bd;
-            /* Will be repositioned via JS within safe bounds */
         }
 
         .message {
@@ -193,7 +191,6 @@
             color: #ff6b9d;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             h1 { font-size: 2.2rem; }
             p { font-size: 1.3rem; }
@@ -215,21 +212,12 @@
 
     <div class="container">
         <h1>Will You Be Mine? <i class="fas fa-heart heart"></i></h1>
-        <p>Dear YOU,</p>
+        <p>Dear YOUR NAME,</p>
         <p>I've been thinking about you every day...<br>and I can't imagine my life without you!</p>
         <p>Will you make me the happiest person alive?</p>
 
         <div class="buttons">
-            <form id="yesForm" action="https://formspree.io/f/mblpqoeg" method="POST" style="display:inline;">
-                <input type="hidden" name="visitor_code" value="">
-                <input type="hidden" name="message" value="She said YES! 💖">
-                <button type="submit" class="btn yes-btn">Yes! 💖</button>
-            </form>
-
-<script>
-// Set the hidden field when page loads
-document.querySelector('input[name="visitor_code"]').value = getVisitorCode();
-</script>
+            <button class="btn yes-btn" id="yesBtn">Yes! 💖</button>
             <button class="btn no-btn" id="noBtn">No 😢</button>
         </div>
 
@@ -253,14 +241,6 @@ document.querySelector('input[name="visitor_code"]').value = getVisitorCode();
     </div>
 
     <script>
-        // Get the 'from' parameter from URL (e.g., ?from=crush123)
-        function getVisitorCode() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('from') || 'anonymous';
-        }
-    </script>
-
-    <script>
         // Create falling hearts
         function createHearts() {
             const container = document.getElementById('hearts-container');
@@ -277,7 +257,6 @@ document.querySelector('input[name="visitor_code"]').value = getVisitorCode();
                     heart.style.fontSize = (Math.random() * 16 + 14) + 'px';
                     container.appendChild(heart);
 
-                    // Remove after animation
                     setTimeout(() => {
                         if (heart.parentNode) heart.remove();
                     }, 10000);
@@ -285,84 +264,86 @@ document.querySelector('input[name="visitor_code"]').value = getVisitorCode();
             }
         }
 
-        document.getElementById('yesForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Stop page refresh
-  
-          // Submit form silently
-        fetch(this.action, {
-         method: 'POST',
-        body: new FormData(this),
-        headers: { 'Accept': 'application/json' }
-        }).then(() => {
-        // Show your cute success screen
-        document.getElementById('successScreen').classList.add('show');
-        }).catch(() => {
-            alert('Oops! Could you try again?');
-            });
-        });
-
-        // Move "No" button within safe bounds
+        // Move "No" button safely inside container
         function moveNoButton() {
             const noBtn = document.getElementById('noBtn');
             const messageEl = document.getElementById('message');
             const messages = [
-                "Oh come on! 😢",
-                "Are you sure? 💔",
-                "Don't break my heart! 💕",
-                "I'll keep asking until you say yes! 😊",
-                "You know you want to say yes! 😉",
-                "Please? Pretty please? 🥺",
-                "I'll give you all my hearts! 💖",
-                "Just one little 'Yes'? 😇",
-                "You're making me sad... 😿",
-                "I promise to be the best! 🤗"
+                "Oh come on! 😢", "Are you sure? 💔", "Don't break my heart! 💕",
+                "I'll keep asking until you say yes! 😊", "You know you want to say yes! 😉",
+                "Please? Pretty please? 🥺", "I'll give you all my hearts! 💖",
+                "Just one little 'Yes'? 😇", "You're making me sad... 😿", "I promise to be the best! 🤗"
             ];
 
-            // Show message
             messageEl.textContent = messages[Math.floor(Math.random() * messages.length)];
             messageEl.style.opacity = 1;
             setTimeout(() => messageEl.style.opacity = 0, 2000);
 
-            // Get container bounds
-            const containerRect = document.querySelector('.container').getBoundingClientRect();
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
             const btnRect = noBtn.getBoundingClientRect();
-
-            // Safe area: inside container with padding
+            
             const safeLeft = containerRect.left + 20;
             const safeTop = containerRect.top + 20;
             const safeRight = containerRect.right - btnRect.width - 20;
             const safeBottom = containerRect.bottom - btnRect.height - 20;
 
-            // Generate new position within safe bounds
-            const newX = Math.floor(Math.random() * (safeRight - safeLeft)) + safeLeft;
-            const newY = Math.floor(Math.random() * (safeBottom - safeTop)) + safeTop;
-
-            // Apply new position (relative to viewport)
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = newX + 'px';
-            noBtn.style.top = newY + 'px';
-            noBtn.style.transform = 'none';
+            if (safeRight > safeLeft && safeBottom > safeTop) {
+                const newX = Math.floor(Math.random() * (safeRight - safeLeft)) + safeLeft;
+                const newY = Math.floor(Math.random() * (safeBottom - safeTop)) + safeTop;
+                
+                noBtn.style.position = 'fixed';
+                noBtn.style.left = newX + 'px';
+                noBtn.style.top = newY + 'px';
+                noBtn.style.transform = 'none';
+            }
         }
 
-        function showSuccess() {
-            document.getElementById('successScreen').classList.add('show');
-            // Optional: Add confetti or extra effects here
+        // Get secret code from URL
+        function getVisitorCode() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('from') || 'anonymous';
         }
 
-        // Initialize
+        // Initialize everything
         document.addEventListener('DOMContentLoaded', () => {
             createHearts();
-            setInterval(createHearts, 8000); // Keep hearts falling
+            setInterval(createHearts, 8000);
 
+            // Set up "No" button
             document.getElementById('noBtn').addEventListener('click', moveNoButton);
-            document.getElementById('yesBtn').addEventListener('click', showSuccess);
 
-            // Reset "No" button to normal flow on window resize
-            window.addEventListener('resize', () => {
-                const noBtn = document.getElementById('noBtn');
-                noBtn.style.position = '';
-                noBtn.style.left = '';
-                noBtn.style.top = '';
+            // Set up "Yes" button with Formspree
+            document.getElementById('yesBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // 👇👇👇 REPLACE THIS WITH YOUR FORMSPREE ID 👇👇👇
+                const FORMSPREE_URL = 'https://formspree.io/f/YOUR_FORM_ID_HERE';
+                // 👆👆👆 REPLACE THIS WITH YOUR FORMSPREE ID 👆👆👆
+
+                // Create form dynamically
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = FORMSPREE_URL;
+
+                // Add hidden fields
+                const codeField = document.createElement('input');
+                codeField.type = 'hidden';
+                codeField.name = 'who_clicked';
+                codeField.value = getVisitorCode();
+
+                const msgField = document.createElement('input');
+                msgField.type = 'hidden';
+                msgField.name = 'message';
+                msgField.value = 'She said YES! 💖';
+
+                form.appendChild(codeField);
+                form.appendChild(msgField);
+                document.body.appendChild(form);
+                form.submit();
+
+                // Show success screen
+                document.getElementById('successScreen').classList.add('show');
             });
         });
     </script>
